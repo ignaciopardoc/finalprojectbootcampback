@@ -31,14 +31,15 @@ controller.register = (req, res) => {
 controller.auth = (req, res) => {
     const { username, password } = req.body
     try {
-        connection.query(`SELECT id, username, email FROM user WHERE username='${username}' AND password='${password}';`, (err, result) => {
+        connection.query(`SELECT id, username, email, isAdmin FROM user WHERE username='${username}' AND password='${password}';`, (err, result) => {
             if (err) throw err
             //Check if mysql returns any result
             if (result.length) {
 
-                const { id, email } = result[0]
+                let { id, email, isAdmin } = result[0]
+                isAdmin = Boolean(isAdmin)
 
-                const token = jwt.sign({ username, email, id }, myPrivateKey)
+                const token = jwt.sign({ username, email, id, isAdmin }, myPrivateKey)
                 res.json(token)
             }
             else {
@@ -50,18 +51,30 @@ controller.auth = (req, res) => {
     }
 }
 
+//Eliminar usuario por token
 controller.deleteUser = (req, res) => {
     let { authorization } = req.headers
     if (authorization) {
-        token = authorization.split(" ")[1]
+        const token = authorization.split(" ")[1]
         const userId = jwt.decode(token).id
         connection.query(`DELETE FROM user WHERE id = ${userId}`)
         res.sendStatus(200)
     }
 }
 
+//Actualizar usuario por token
 controller.updateUser = (req, res) => {
-    
+    const { password, email, firstname, lastname } = req.body
+    const { authorization } = req.headers
+    const token = authorization.split(" ")[1]
+    const userId = jwt.decode(token).id
+
+
+    connection.query(`UPDATE user SET ${password ? `password='${password}',` : ""} ${firstname ? `firstname='${firstname}',` : ""}${lastname ? `lastname='${lastname}',` : ""} ${email ? ` email='${email}'` : ""} WHERE id=${userId}`, (err, result) => {
+        if (err) throw err
+
+        res.sendStatus(200)
+    })
 }
 
 
