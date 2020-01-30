@@ -11,7 +11,7 @@ controller.delete = (req, res) => {
     let { authorization } = req.headers
     if (authorization) {
         const token = authorization.split(" ")[1]
-        const userId = jwt.decode(token).id
+        const userId = jwt.verify(token, myPrivateKey).id
         connection.query(`DELETE FROM business WHERE id = ${userId}`)
         res.sendStatus(200)
     }
@@ -53,8 +53,7 @@ controller.getBusinessFromUser = (req, res) => {
     let token = req.headers.authorization.replace("Bearer ", "")
     
     const {id} = jwt.verify(token, myPrivateKey)
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-    console.log(id)
+   
 
     connection.query(`SELECT * FROM business WHERE user_id = ${id}`, (error, result) => {
         if (error) throw error
@@ -74,6 +73,18 @@ controller.getOneInfo = (req, res) => {
     })
 
 
+}
+
+controller.getCategories = (req, res) => {
+
+    connection.query(`SELECT
+    COLUMN_TYPE AS categoryType
+ FROM
+    INFORMATION_SCHEMA.COLUMNS
+ WHERE
+    TABLE_SCHEMA = 'doggiesintown' AND TABLE_NAME = 'business' AND COLUMN_NAME = 'category';`, (error, results) => {
+        res.send(results[0].categoryType.replace("enum('", "").replace("')", "").split("','"))
+    })
 }
 
 module.exports = controller

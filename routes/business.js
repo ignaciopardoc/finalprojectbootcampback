@@ -10,5 +10,7 @@ router.get("/getInfoUserBusiness", businessController.getBusinessFromUser)
 
 router.get('/getOneBusiness/:id', businessController.getOneInfo)
 
+router.get('/getCategories', businessController.getCategories)
+
 
 module.exports = router
