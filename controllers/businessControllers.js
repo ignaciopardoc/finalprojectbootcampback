@@ -31,13 +31,46 @@ controller.update = (req, res) => {
     })
 }
 
+controller.insertBusiness = (req, res) => {
+    let token = req.headers.authorization.replace("Bearer ", "")
+    
+    const {id} = jwt.verify(token, myPrivateKey)
+    console.log(id)
+    
+
+    const {businessName, address, city} = req.body
+    console.log(city)
+
+
+    connection.query(`INSERT INTO business (businessName, address, city, user_id) VALUES ('${businessName}', '${address}', '${city}', '${id}');`, (error, result) => {
+        if (error) throw error
+
+        res.sendStatus(200)
+    })
+}
+
+controller.getBusinessFromUser = (req, res) => {
+    let token = req.headers.authorization.replace("Bearer ", "")
+    
+    const {id} = jwt.verify(token, myPrivateKey)
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    console.log(id)
+
+    connection.query(`SELECT * FROM business WHERE user_id = ${id}`, (error, result) => {
+        if (error) throw error
+
+        res.json(result)
+    })
+}
+
+
 controller.getOneInfo = (req, res) => {
     const { id } = req.params
 
-    connection.query(`SELECT businessName from business WHERE id = ${id}`, (err, result) => {
+    connection.query(`SELECT id, businessName, address, city from business WHERE id = ${id}`, (err, result) => {
         if (err) throw err
 
-        res.send(result[0])
+        res.json(result[0])
     })
 
 
