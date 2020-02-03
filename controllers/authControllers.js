@@ -14,7 +14,7 @@ controller.register = (req, res) => {
     connection.query(`SELECT * FROM login WHERE username='${username}' OR email='${email}'`, (err, result) => {
 
         if (err) throw err
-        
+
         else if (result.length === 0) {
             connection.query(`INSERT INTO login (username, email, password, isBusiness) VALUES ('${username}', '${email}', '${password}', '${isBusiness}');`, (err, result) => {
                 if (err) throw err
@@ -28,17 +28,19 @@ controller.register = (req, res) => {
 //User authentication
 controller.auth = (req, res) => {
     let { username, password } = req.body
-    
+
     try {
-        connection.query(`SELECT id, username, email, isAdmin FROM login WHERE username='${username}' OR email='${username}' AND password='${password}';`, (err, result) => {
+        connection.query(`SELECT id, username, email, isAdmin, isBusiness FROM login WHERE username='${username}' OR email='${username}' AND password='${password}';`, (err, result) => {
             if (err) throw err
             //Check if mysql returns any result
             if (result.length) {
 
                 let { id, email, isAdmin, isBusiness, username } = result[0]
                 isAdmin = Boolean(isAdmin)
+                isBusiness = Boolean(isBusiness)
 
                 const token = jwt.sign({ username, email, id, isAdmin, isBusiness }, myPrivateKey)
+                console.log(token)
                 res.json(token)
             }
             else {
@@ -48,6 +50,22 @@ controller.auth = (req, res) => {
     } catch{
         res.sendStatus(500)
     }
+}
+
+controller.getInfoUser = (req, res) => {
+    console.log(req.headers.authorization)
+    const token = req.headers.authorization.replace("Bearer ", "")
+    console.log(token)
+
+    const id = jwt.verify(token, myPrivateKey).id
+
+    connection.query(`SELECT id, email, username FROM login WHERE id = '${id}'`, (error, result) => {
+        if (error) throw error
+
+        res.json(result[0])
+    })
+
+    console.log(id)
 }
 
 module.exports = controller

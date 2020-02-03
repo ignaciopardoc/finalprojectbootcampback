@@ -24,7 +24,7 @@ controller.updateUser = (req, res) => {
     email= email.toLowerCase()
     const { authorization } = req.headers
     const token = authorization.split(" ")[1]
-    const userId = jwt.decode(token).id
+    const userId = jwt.verify(token, myPrivateKey).id
 
 
     connection.query(`UPDATE login SET ${password ? `password='${password}',` : ""} ${firstname ? `firstname='${firstname}',` : ""}${lastname ? `lastname='${lastname}',` : ""} ${email ? ` email='${email}'` : ""} WHERE id=${userId}`, (err, result) => {
