@@ -14,13 +14,15 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '100000mb' }));
 const userRouter = require("./routes/users.js")
 const businessRouter = require("./routes/business.js")
 const authController = require("./routes/auth.js")
+const dogController = require("./routes/dog.js")
 
 
-
+app.use("/public", express.static("public"))
 //connection to the routes
 app.use('/user', userRouter)
 app.use('/business', businessRouter)
 app.use('/auth', authController)
+app.use('/dog', dogController)
 
 connection.connect(console.log("DB Connected"))
 

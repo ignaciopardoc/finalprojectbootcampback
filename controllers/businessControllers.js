@@ -34,14 +34,24 @@ const myPrivateKey = "_j87sUtr*e-XJrEGNx@Fx=bqLK@GWPAP^!f@frFCR#!$TSDK3DQc9yP5p_
 
 
 //Eliminar Empresa por token
-controller.delete = (req, res) => {
-    let { authorization } = req.headers
-    if (authorization) {
-        const token = authorization.split(" ")[1]
-        const userId = jwt.verify(token, myPrivateKey).id
-        connection.query(`DELETE FROM business WHERE id = ${userId}`)
-        res.sendStatus(200)
-    }
+// controller.delete = (req, res) => {
+//     let { authorization } = req.headers
+//     if (authorization) {
+//         const token = authorization.split(" ")[1]
+//         const userId = jwt.verify(token, myPrivateKey).id
+//         connection.query(`DELETE FROM business WHERE id = ${userId}`)
+//         res.sendStatus(200)
+//     }
+// }
+
+//Delete business
+controller.deleteBusiness = (req, res) => {
+   const {businessId} = req.params
+   connection.query(`DELETE FROM business WHERE id = '${businessId}'`, (err, result) => {
+       if (err) throw err
+
+       res.json(result)
+   })
 }
 
 //Actualizar usuario por token
@@ -58,6 +68,27 @@ controller.update = (req, res) => {
     })
 }
 
+controller.updateBusiness = (req, res) => {
+    const { id, businessName,
+        address,
+        description,
+        category,
+        telephone,
+        email,
+        lat,
+        lon,
+        city,
+        postcode,
+        instagram } = req.body
+
+    connection.query(`UPDATE business SET ${businessName ? `businessName='${businessName}',` : ""}${description ? `description='${description}',` : ""}${category ? `category='${category}',` : ""}${telephone ? `telephone='${telephone}',` : ""}${email ? `email='${email}',` : ""}${lat ? `lat='${lat}',` : ""}${lon ? `lon='${lon}',` : ""}${city ? `city='${city}',` : ""}${postcode ? `postcode='${postcode}',` : ""}${instagram ? `instagram='${instagram}',` : ""}${address ? ` address='${address}'` : ""} WHERE id=${id}`, (err, result) => {
+        if (err) throw err
+
+        res.sendStatus(200)
+    })
+
+}
+
 
 //Insert User business
 controller.insertBusiness = (req, res) => {
@@ -68,7 +99,7 @@ controller.insertBusiness = (req, res) => {
 
 
     const { businessName,
-        completeAddress,
+        address,
         description,
         category,
         telephone,
@@ -92,10 +123,10 @@ controller.insertBusiness = (req, res) => {
         city,
         postcode,
         instagram,
-        user_id) VALUES ('${businessName}', '${completeAddress}', '${description}', '${category}', '${telephone}', '${email}', '${lat}', '${lon}', '${city}', '${postcode}', '${instagram}', '${id}');`, (error, result) => {
+        user_id) VALUES ('${businessName}', '${address}', '${description}', '${category}', '${telephone}', '${email}', '${lat}', '${lon}', '${city}', '${postcode}', '${instagram}', '${id}');`, (error, result) => {
         if (error) throw error
-
-        res.sendStatus(200)
+        console.log(result)
+        res.json(result)
     })
 }
 
@@ -116,8 +147,9 @@ controller.getBusinessFromUser = (req, res) => {
 //Get info from one business
 controller.getOneInfo = (req, res) => {
     const { id } = req.params
+    console.log(id)
 
-    connection.query(`SELECT id, businessName, address, city from business WHERE id = ${id}`, (err, result) => {
+    connection.query(`SELECT * from business WHERE id = ${id}`, (err, result) => {
         if (err) throw err
 
         res.json(result[0])
@@ -140,46 +172,13 @@ controller.getCategories = (req, res) => {
 }
 
 controller.setMainPhoto = (req, res) => {
-    console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-        console.log(req.body)
+    const { business_id } = req.params
     console.log(req.file.filename)
-    
-    // const { authorization } = request.headers;
-    // if (authorization) {
-    //     const token = authorization.replace("Bearer ", "");
-    //     const { id } = verify(token, myPrivateKey)
-    //     const { filename: path, originalname } = req.file;
-    //     connection.query(
-    //         `
-    //     INSERT
-    //     INTO business (path)
-    //     VALUES('${path}') WHERE id='${businessId}' AND user_id = '${id}'
-    //   `,
-    //         error => {
-    //             if (error) {
-    //                 console.log(error);
-    //                 response.sendStatus(400);
-    //             } else {
-    //                 connection.query(
-    //                     `
-    //             SELECT *
-    //             FROM business
-    //             WHERE path = '${path}'
-    //           `,
-    //                     (error, results) => {
-    //                         if (error) {
-    //                             console.log(error);
-    //                             response.sendStatus(400);
-    //                         } else {
-    //                             const [file] = results;
-    //                             response.send(file);
-    //                         }
-    //                     }
-    //                 );
-    //             }
-    //         }
-    //     );
-    // }
+    connection.query(`UPDATE business SET mainImagePath = '${req.file.filename}' WHERE (id = '${business_id}');`, (err, result) => {
+        if (err) throw err
+
+        res.sendStatus(200)
+    })
 }
 
 module.exports = controller

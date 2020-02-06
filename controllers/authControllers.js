@@ -52,20 +52,82 @@ controller.auth = (req, res) => {
     }
 }
 
+//Get user info
 controller.getInfoUser = (req, res) => {
-    console.log(req.headers.authorization)
-    const token = req.headers.authorization.replace("Bearer ", "")
-    console.log(token)
+    let { authorization } = req.headers
+    if (authorization) {
+        console.log(authorization)
+        const token = authorization.split(" ")[1]
+        const userId = jwt.verify(token, myPrivateKey).id
 
-    const id = jwt.verify(token, myPrivateKey).id
+        connection.query(`SELECT * FROM login WHERE id = '${userId}'`, (err, result) => {
+            if (err) throw err
 
-    connection.query(`SELECT id, email, username FROM login WHERE id = '${id}'`, (error, result) => {
-        if (error) throw error
+            delete result[0].password
+            res.json(result[0])
 
-        res.json(result[0])
-    })
-
-    console.log(id)
+        })
+    }
 }
+
+controller.uploadAvatar = (req, res) => {
+    const { userId } = req.params
+    console.log(req.file.filename)
+    connection.query(`UPDATE login SET profilePicture = '${req.file.filename}' WHERE (id = '${userId}');`, (err, result) => {
+        if (err) throw err
+
+        res.sendStatus(200)
+    })
+}
+
+controller.addPersonalInformation = (req, res) => {
+    let { authorization } = req.headers
+    
+    const {name, surname, address, city, postcode, } = req.body
+    if (authorization) {
+        console.log(authorization)
+        const token = authorization.split(" ")[1]
+        const userId = jwt.verify(token, myPrivateKey).id
+        connection.query(`UPDATE login SET name='${name}', surname='${surname}', address='${address}', city='${city}', postcode='${postcode}' WHERE (id = '${userId}');`, (err, result) => {
+            if (err) throw err
+
+            res.json(result)
+        } )
+    }
+}
+
+controller.updatePassword = (req, res) => {
+    const { password } = req.body
+    let { authorization } = req.headers
+    if (authorization) {
+        console.log(authorization)
+        const token = authorization.split(" ")[1]
+        const userId = jwt.verify(token, myPrivateKey).id
+
+        connection.query(`UPDATE login SET password='${password}' WHERE (id = '${userId}');`, (err, result) => {
+            if (err) throw err
+
+            res.json(result)
+        })
+
+    }
+
+}
+
+// controller.getInfoUser = (req, res) => {
+//     console.log(req.headers.authorization)
+//     const token = req.headers.authorization.replace("Bearer ", "")
+//     console.log(token)
+
+//     const id = jwt.verify(token, myPrivateKey).id
+
+//     connection.query(`SELECT id, email, username FROM login WHERE id = '${id}'`, (error, result) => {
+//         if (error) throw error
+
+//         res.json(result[0])
+//     })
+
+//     console.log(id)
+// }
 
 module.exports = controller
