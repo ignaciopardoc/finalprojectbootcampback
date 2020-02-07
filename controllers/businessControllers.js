@@ -181,4 +181,17 @@ controller.setMainPhoto = (req, res) => {
     })
 }
 
+controller.getBusinessMap = (req, res) => {
+    const {latBottom,
+        latTop,
+        lonLeft, 
+        lonRight} = req.body
+
+        connection.query(`SELECT * FROM business WHERE lat > ${latBottom} AND lat < ${latTop} AND lon > ${lonLeft} AND lon < ${lonRight}`, (err, result) => {
+            if (err) throw err
+
+            res.json(result)
+        })
+}
+
 module.exports = controller
