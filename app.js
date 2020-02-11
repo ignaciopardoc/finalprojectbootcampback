@@ -15,6 +15,7 @@ const userRouter = require("./routes/users.js")
 const businessRouter = require("./routes/business.js")
 const authController = require("./routes/auth.js")
 const dogController = require("./routes/dog.js")
+const eventRouter = require("./routes/event.js")
 
 
 app.use("/public", express.static("public"))
@@ -23,6 +24,7 @@ app.use('/user', userRouter)
 app.use('/business', businessRouter)
 app.use('/auth', authController)
 app.use('/dog', dogController)
+app.use("/event", eventRouter)
 
 connection.connect(console.log("DB Connected"))
 

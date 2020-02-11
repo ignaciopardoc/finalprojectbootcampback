@@ -35,6 +35,7 @@ router.get('/getCategories', businessController.getCategories)
 router.post('/setMainPhoto/:business_id', uploadAvatar,  businessController.setMainPhoto)
 
 router.post('/getBusinessMap', businessController.getBusinessMap)
+router.post('/getBusinessPremium', businessController.getBusinessPremium)
 
 
 module.exports = router

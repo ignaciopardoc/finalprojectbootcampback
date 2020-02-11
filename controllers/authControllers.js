@@ -1,5 +1,9 @@
 const connection = require("../mysql/config.js")
 const controller = {}
+const stripe = require('stripe')('sk_test_Xh0ofyGsrCcOg7kaPov3zcLI00swffwRtr')
+const IBAN = require("iban")
+
+
 
 //JSONWEBTOKEN for authentication
 const jwt = require("jsonwebtoken")
@@ -28,18 +32,21 @@ controller.register = (req, res) => {
 //User authentication
 controller.auth = (req, res) => {
     let { username, password } = req.body
-
+    console.log(username, password)
     try {
-        connection.query(`SELECT id, username, email, isAdmin, isBusiness FROM login WHERE username='${username}' OR email='${username}' AND password='${password}';`, (err, result) => {
+        connection.query(`SELECT id, username, email, isAdmin, isBusiness, profilePicture, iban, name FROM login WHERE email='${username}' OR username='${username}' AND password='${password}';`, (err, result) => {
             if (err) throw err
             //Check if mysql returns any result
             if (result.length) {
 
-                let { id, email, isAdmin, isBusiness, username } = result[0]
+                let { id, email, isAdmin, isBusiness, username, iban, name, profilePicture } = result[0]
+                let isPremium = IBAN.isValid(iban)
+                console.log(isPremium)
+                console.log(name)
                 isAdmin = Boolean(isAdmin)
                 isBusiness = Boolean(isBusiness)
-
-                const token = jwt.sign({ username, email, id, isAdmin, isBusiness }, myPrivateKey)
+                
+                const token = jwt.sign({ username, email, id, isAdmin, isBusiness, isPremium, name, profilePicture }, myPrivateKey)
                 console.log(token)
                 res.json(token)
             }
@@ -64,6 +71,7 @@ controller.getInfoUser = (req, res) => {
             if (err) throw err
 
             delete result[0].password
+            delete result[0].iban
             res.json(result[0])
 
         })
@@ -82,8 +90,8 @@ controller.uploadAvatar = (req, res) => {
 
 controller.addPersonalInformation = (req, res) => {
     let { authorization } = req.headers
-    
-    const {name, surname, address, city, postcode, } = req.body
+
+    const { name, surname, address, city, postcode, } = req.body
     if (authorization) {
         console.log(authorization)
         const token = authorization.split(" ")[1]
@@ -92,7 +100,7 @@ controller.addPersonalInformation = (req, res) => {
             if (err) throw err
 
             res.json(result)
-        } )
+        })
     }
 }
 
@@ -112,6 +120,22 @@ controller.updatePassword = (req, res) => {
 
     }
 
+}
+
+controller.makePremium = (req, res) => {
+    const { iban } = req.body
+    let { authorization } = req.headers
+
+    if (authorization) {
+        const token = authorization.split(" ")[1]
+        const userId = jwt.verify(token, myPrivateKey).id
+
+        connection.query(`UPDATE login SET iban='${iban}' WHERE (id = '${userId}');`, (err, result) => {
+            if (err) throw err
+
+            res.json(result)
+        })
+    }
 }
 
 // controller.getInfoUser = (req, res) => {

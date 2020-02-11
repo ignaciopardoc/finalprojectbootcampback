@@ -185,9 +185,24 @@ controller.getBusinessMap = (req, res) => {
     const {latBottom,
         latTop,
         lonLeft, 
-        lonRight} = req.body
+        lonRight, category} = req.body
+        console.log(category)
 
-        connection.query(`SELECT * FROM business WHERE lat > ${latBottom} AND lat < ${latTop} AND lon > ${lonLeft} AND lon < ${lonRight}`, (err, result) => {
+        connection.query(`SELECT business.* FROM business LEFT JOIN login ON business.user_id = login.id WHERE login.iban IS NULL OR login.iban = '' AND lat > ${latBottom} AND lat < ${latTop} AND lon > ${lonLeft} AND lon < ${lonRight}${category !== "null" && category ? ` AND category = '${category}'` : ""}`, (err, result) => {
+            if (err) throw err
+
+            res.json(result)
+        })
+}
+
+controller.getBusinessPremium = (req, res) => {
+    const {latBottom,
+        latTop,
+        lonLeft, 
+        lonRight, category} = req.body
+        console.log(category)
+
+        connection.query(`SELECT business.* FROM business LEFT JOIN login ON business.user_id = login.id WHERE login.iban<>'' AND lat > ${latBottom} AND lat < ${latTop} AND lon > ${lonLeft} AND lon < ${lonRight}${category !== "null" && category ? `  AND category = '${category}'` : ""}`, (err, result) => {
             if (err) throw err
 
             res.json(result)
@@ -195,3 +210,5 @@ controller.getBusinessMap = (req, res) => {
 }
 
 module.exports = controller
+
+// 

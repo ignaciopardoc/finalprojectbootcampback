@@ -23,5 +23,6 @@ router.get('/getInfoUser', authController.getInfoUser)
 router.post('/uploadAvatar/:userId', uploadAvatar, authController.uploadAvatar)
 router.post('/updatePassword', authController.updatePassword)
 router.post("/addPersonalInformation", authController.addPersonalInformation)
+router.post("/makePremium", authController.makePremium)
 
 module.exports = router
