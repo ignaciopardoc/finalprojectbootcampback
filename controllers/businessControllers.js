@@ -46,12 +46,12 @@ const myPrivateKey = "_j87sUtr*e-XJrEGNx@Fx=bqLK@GWPAP^!f@frFCR#!$TSDK3DQc9yP5p_
 
 //Delete business
 controller.deleteBusiness = (req, res) => {
-   const {businessId} = req.params
-   connection.query(`DELETE FROM business WHERE id = '${businessId}'`, (err, result) => {
-       if (err) throw err
+    const { businessId } = req.params
+    connection.query(`DELETE FROM business WHERE id = '${businessId}'`, (err, result) => {
+        if (err) throw err
 
-       res.json(result)
-   })
+        res.json(result)
+    })
 }
 
 //Actualizar usuario por token
@@ -182,31 +182,31 @@ controller.setMainPhoto = (req, res) => {
 }
 
 controller.getBusinessMap = (req, res) => {
-    const {latBottom,
+    const { latBottom,
         latTop,
-        lonLeft, 
-        lonRight, category} = req.body
-        console.log(category)
+        lonLeft,
+        lonRight, category } = req.body
+    console.log(category)
 
-        connection.query(`SELECT business.* FROM business LEFT JOIN login ON business.user_id = login.id WHERE login.iban IS NULL OR login.iban = '' AND lat > ${latBottom} AND lat < ${latTop} AND lon > ${lonLeft} AND lon < ${lonRight}${category !== "null" && category ? ` AND category = '${category}'` : ""}`, (err, result) => {
-            if (err) throw err
+    connection.query(`SELECT business.* FROM business LEFT JOIN login ON business.user_id = login.id WHERE (login.iban IS NULL OR login.iban = '') AND lat > ${latBottom} AND lat < ${latTop} AND lon > ${lonLeft} AND lon < ${lonRight}${category !== "null" && category ? ` AND category = '${category}'` : ""}`, (err, result) => {
+        if (err) throw err
 
-            res.json(result)
-        })
+        res.json(result)
+    })
 }
 
 controller.getBusinessPremium = (req, res) => {
-    const {latBottom,
+    const { latBottom,
         latTop,
-        lonLeft, 
-        lonRight, category} = req.body
-        console.log(category)
+        lonLeft,
+        lonRight, category } = req.body
+    console.log(category)
 
-        connection.query(`SELECT business.* FROM business LEFT JOIN login ON business.user_id = login.id WHERE login.iban<>'' AND lat > ${latBottom} AND lat < ${latTop} AND lon > ${lonLeft} AND lon < ${lonRight}${category !== "null" && category ? `  AND category = '${category}'` : ""}`, (err, result) => {
-            if (err) throw err
+    connection.query(`SELECT business.* FROM business LEFT JOIN login ON business.user_id = login.id WHERE login.iban<>'' AND lat > ${latBottom} AND lat < ${latTop} AND lon > ${lonLeft} AND lon < ${lonRight}${category !== "null" && category ? ` AND category = '${category}'` : ""}`, (err, result) => {
+        if (err) throw err
 
-            res.json(result)
-        })
+        res.json(result)
+    })
 }
 
 module.exports = controller

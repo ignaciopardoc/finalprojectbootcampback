@@ -25,5 +25,6 @@ router.post("/setMainPhoto/:dog_id", dogPhoto, dogControllers.setMainPhoto)
 router.get("/getDogInfo", dogControllers.getDogInfo)
 router.post("/updateDog/:dog_id", dogControllers.updateDog )
 router.get("/getDogInfo/:dog_id", dogControllers.getOneDogInfo)
+router.get("/getDogsFromUser/", dogControllers.getDogsFromUser)
 
 module.exports = router

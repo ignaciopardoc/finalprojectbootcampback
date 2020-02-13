@@ -43,6 +43,7 @@ controller.getDogInfo = (req, res) => {
     })
 }
 
+// Update one dog info
 controller.updateDog = (req, res) => {
     const {dog_id} = req.params
    
@@ -54,10 +55,23 @@ controller.updateDog = (req, res) => {
    })
 }
 
+//Obtain one dog info
 controller.getOneDogInfo = (req, res) =>{
     const {dog_id} = req.params
 
     connection.query(`SELECT * FROM dog WHERE id = '${dog_id}'`, (err, result) => {
+        if (err) throw err
+
+        res.json(result)
+    })
+}
+
+controller.getDogsFromUser = (req, res) => {
+    let token = req.headers.authorization.replace("Bearer ", "")
+    
+    const { id } = jwt.verify(token, myPrivateKey)
+
+    connection.query(`SELECT * FROM dog WHERE user_id = ${id}`, (err, result) => {
         if (err) throw err
 
         res.json(result)
