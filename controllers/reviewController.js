@@ -21,7 +21,11 @@ controller.setReview = (req, res) => {
         }
 
         else {
-            connection.query(`UPDATE `) //TODO complete update review
+            connection.query(`UPDATE review SET  ${review ? `review='${review}',`  : ""} reviewDate = NOW(), ${stars ? `stars='${stars}'` : ""}  WHERE dog_id = ${dog_id} AND business_id = ${business_id}`, (err, result) => {
+                if (err) throw err
+
+                res.json(result)
+            })
         }
     })
 }
@@ -35,6 +39,18 @@ controller.getReviewNumber = (req, res) => {
         res.json(result[0])
     })
 }
+
+controller.getReviews = (req, res) => {
+    const{id} = req.body
+
+    connection.query(`SELECT * FROM review WHERE business_id = ${id} ORDER BY reviewDate DESC`, (err, result) => {
+        if (err) throw err
+
+        res.json(result)
+    })
+}
+
+
 
 
 
