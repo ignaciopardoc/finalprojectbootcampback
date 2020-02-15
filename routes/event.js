@@ -10,5 +10,7 @@ router.get('/getEventInfo/:eventId', eventController.getEventInfo)
 router.post('/updateEvent/', eventController.updateEvent)
 router.post('/deleteEvent/', eventController.deleteEvent)
 router.get('/getFutureEvents/', eventController.getFutureEvents)
+router.get('/getFutureEventsList', eventController.getFutureEventsList)
+router.get('/getCitiesWithEvents', eventController.getCitiesWithEvents)
 
 module.exports = router

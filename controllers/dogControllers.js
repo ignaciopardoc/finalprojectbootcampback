@@ -62,7 +62,7 @@ controller.getOneDogInfo = (req, res) =>{
     connection.query(`SELECT * FROM dog WHERE id = '${dog_id}'`, (err, result) => {
         if (err) throw err
 
-        res.json(result)
+        res.json(result[0])
     })
 }
 

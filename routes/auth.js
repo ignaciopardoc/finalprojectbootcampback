@@ -24,5 +24,5 @@ router.post('/uploadAvatar/:userId', uploadAvatar, authController.uploadAvatar)
 router.post('/updatePassword', authController.updatePassword)
 router.post("/addPersonalInformation", authController.addPersonalInformation)
 router.post("/makePremium", authController.makePremium)
-
+router.get("/updateToken", authController.updateToken)
 module.exports = router

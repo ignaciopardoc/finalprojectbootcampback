@@ -31,9 +31,9 @@ controller.setReview = (req, res) => {
 }
 
 controller.getReviewNumber = (req, res) => {
-    const { id: businessId } = req.body
+    const { id } = req.body
 
-    connection.query(`SELECT count(*) AS reviewNumber, AVG(stars) AS averageRate FROM review WHERE business_id = ${businessId};`, (err, result) => {
+    connection.query(`SELECT count(*) AS reviewNumber, AVG(stars) AS averageRate FROM review WHERE business_id = ${id};`, (err, result) => {
         if (err) throw err
 
         res.json(result[0])
@@ -41,9 +41,9 @@ controller.getReviewNumber = (req, res) => {
 }
 
 controller.getReviews = (req, res) => {
-    const{id} = req.body
+    const{businessId} = req.params
 
-    connection.query(`SELECT * FROM review WHERE business_id = ${id} ORDER BY reviewDate DESC`, (err, result) => {
+    connection.query(`SELECT * FROM review WHERE business_id = ${businessId} ORDER BY reviewDate DESC`, (err, result) => {
         if (err) throw err
 
         res.json(result)

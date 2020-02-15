@@ -41,13 +41,12 @@ controller.auth = (req, res) => {
 
                 let { id, email, isAdmin, isBusiness, username, iban, name, profilePicture } = result[0]
                 let isPremium = IBAN.isValid(iban)
-                console.log(isPremium)
-                console.log(name)
+
                 isAdmin = Boolean(isAdmin)
                 isBusiness = Boolean(isBusiness)
-                
+
                 const token = jwt.sign({ username, email, id, isAdmin, isBusiness, isPremium, name, profilePicture }, myPrivateKey)
-                console.log(token)
+
                 res.json(token)
             }
             else {
@@ -56,6 +55,28 @@ controller.auth = (req, res) => {
         })
     } catch{
         res.sendStatus(500)
+    }
+}
+
+//Update Token 
+controller.updateToken = (req, res) => {
+    let { authorization } = req.headers
+    if (authorization) {
+        console.log(authorization)
+        const token = authorization.split(" ")[1]
+        const userId = jwt.verify(token, myPrivateKey).id
+
+        connection.query(`SELECT * FROM login WHERE id = ${userId}`, (err, result) => {
+            let { id, email, isAdmin, isBusiness, username, iban, name, profilePicture } = result[0]
+            let isPremium = IBAN.isValid(iban)
+
+            isAdmin = Boolean(isAdmin)
+            isBusiness = Boolean(isBusiness)
+
+            const token = jwt.sign({ username, email, id, isAdmin, isBusiness, isPremium, name, profilePicture }, myPrivateKey)
+
+            res.json(token)
+        })
     }
 }
 
