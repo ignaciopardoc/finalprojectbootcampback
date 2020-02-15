@@ -84,7 +84,9 @@ controller.getFutureEvents = (req, res) => {
 }
 
 controller.getFutureEventsList = (req, res) => {
-    connection.query(`SELECT * FROM business, event WHERE event.business_id = business.id AND endDate > now() ORDER BY endDate ASC;`, (err, result) => {
+    const {city} = req.body
+    
+    connection.query(`SELECT * FROM business, event WHERE event.business_id = business.id AND endDate > now() AND business.city = '${city}' ORDER BY endDate ASC;`, (err, result) => {
         if (err) throw err
 
         res.json(result)
@@ -95,7 +97,9 @@ controller.getCitiesWithEvents = (req, res) => {
     connection.query(`SELECT city from event, business WHERE event.business_id = business.id AND event.endDate > now() group by(city) ORDER BY city ASC;`, (err, result) => {
         if (err) throw err
 
-        res.json(result)
+        const cities = Object.values(result[0])
+        
+        res.json(cities)
     })
 }
 
