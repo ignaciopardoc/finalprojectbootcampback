@@ -134,7 +134,7 @@ controller.getCitiesWithEvents = (req, res) => {
     (err, result) => {
       if (err) throw err;
 
-      const cities = Object.values(result[0]);
+      const cities = result.map(result => result.city)
 
       res.json(cities);
     }
