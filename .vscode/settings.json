@@ -1,13 +1,13 @@
 {
-    "sqltools.connections": [
-        {
-            "database": "doggiesintown",
-            "dialect": "MySQL",
-            "name": "doggiesintown",
-            "password": "root",
-            "port": 3306,
-            "server": "localhost",
-            "username": "root"
-        }
-    ]
+  "sqltools.connections": [
+    {
+      "database": "doggiesintown",
+      "dialect": "MySQL",
+      "name": "doggiesintown",
+      "password": "root",
+      "port": 3306,
+      "server": "localhost",
+      "username": "root"
+    }
+  ]
 }
